@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'rest_framework',
+    'rest_framework.authtoken',
+
     'Accounts',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +56,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ldmbackend.urls'
 AUTH_USER_MODEL = 'Accounts.Account'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+    ],
+}
 
 
 TEMPLATES = [
@@ -83,8 +92,8 @@ DATABASES = {
         'NAME': "test",
         'USER': "postgres",
         'PASSWORD': "2012",
-        'HOST' : 'localhost',
-        'PORT' : '5433'
+        'HOST': 'localhost',
+        'PORT': '5433'
     }
 }
 
