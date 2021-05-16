@@ -33,8 +33,8 @@ class LevelIncomeAdmin(admin.ModelAdmin):
 
 
 class PurchasedPackagesAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date', 'amount', 'profit',
-                    'percent10', 'total_income', 'day1')
+    list_display = ('user', 'date', 'amount',
+                    'days')
     search_fields = ('user',)
     list_filter = ()
     fieldsets = ()
@@ -65,12 +65,12 @@ class Bank_Info_Admin(admin.ModelAdmin):
 		return False'''
 
 
-admin.site.register(book)
+# admin.site.register(book)
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundTransferHistory, FundTransferHistoryAdmin)
 admin.site.register(DirectIncome, DirectIncomeAdmin)
 admin.site.register(LevelIncome, LevelIncomeAdmin)
 admin.site.register(PurchasedPackages, PurchasedPackagesAdmin)
-admin.site.register(Bank_Info, Bank_Info_Admin)
+# admin.site.register(Bank_Info, Bank_Info_Admin)
 admin.site.register(AllRoiIncome, AllRoiIncomeAdmin)
 admin.site.register(AllRoiOnRoiIncome, AllRoiOnRoiIncomeAdmin)

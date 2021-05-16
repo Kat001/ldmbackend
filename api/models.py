@@ -50,11 +50,8 @@ class PurchasedPackages(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField(default=0)
-    profit = models.FloatField(default=0)
-    percent10 = models.FloatField(default=0)
-    total_income = models.FloatField(default=0)
-    day1 = models.BooleanField(default=True)
     is_withdrawal = models.BooleanField(default=False)
+    days = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
