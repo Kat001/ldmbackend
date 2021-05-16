@@ -5,12 +5,29 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.views import APIView
 from Accounts.models import Account
 from .models import Fund, LevelIncome, PurchasedPackages
-from .serializers import UserSerializer
+from .serializers import UserSerializer, PackageSerializer
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 
+class ReturnPack(APIView):
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = Account.objects.get(username="admin")  # request.user
+        packages = PurchasedPackages.objects.filter(user=user)
+        serializer = PackageSerializer(packages, many=True)
+
+        return Response({'data': serializer.data}, status=200)
+
+
 class PurchasePackage(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def defineDays(self, amount):
         if amount == 50:
             return 67
@@ -26,8 +43,9 @@ class PurchasePackage(APIView):
             return 40
 
     def post(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
-        amount = 50
+        user = request.user
+        amount = request.data['amount']
+
         try:
             fund_obj = Fund.objects.get(user=user)
             if(fund_obj.available_fund >= amount):
@@ -89,30 +107,36 @@ class PurchasePackage(APIView):
                 package.save()
                 fund_obj.save()
 
-                return Response({"message": "Package purchased seccessfully!"})
+                return Response({"message": "Package purchased seccessfully!"}, status=200)
 
             else:
-                return Response({'message': "Not enough balance"})
+                return Response({'message': "Not enough balance"}, status=404)
 
         except Exception as e:
             print(str(e))
 
         # serializer = UserSerializer(directUsers, many=True)
-        return Response({"message": "hghgs"})
+        return Response({"message": "hghgs"}, status=404)
 
 
 class LevelOne(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
         directUsers = Account.objects.filter(sponsor=user)
 
         serializer = UserSerializer(directUsers, many=True)
-        return Response(serializer.data)
+        return Response({"data": serializer.data})
 
 
 class LevelTwo(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
         l = []
 
         objs1 = Account.objects.filter(sponsor=user)
@@ -125,12 +149,15 @@ class LevelTwo(APIView):
         objs = Account.objects.filter(id__in=l)
         serializer = UserSerializer(objs, many=True)
 
-        return Response(serializer.data)
+        return Response({"data": serializer.data})
 
 
 class LevelThree(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
         l = []
 
         objs1 = Account.objects.filter(sponsor=user)
@@ -143,12 +170,15 @@ class LevelThree(APIView):
                     l.append(i.id)
         objs = Account.objects.filter(id__in=l)
         serializer = UserSerializer(objs, many=True)
-        return Response(serializer.data)
+        return Response({"data": serializer.data})
 
 
 class LevelFour(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
         l = []
 
         objs1 = Account.objects.filter(sponsor=user)
@@ -165,12 +195,15 @@ class LevelFour(APIView):
         objs = Account.objects.filter(id__in=l)
 
         serializer = UserSerializer(objs, many=True)
-        return Response(serializer.data)
+        return Response({"data": serializer.data})
 
 
 class LevelFive(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
         l = []
 
         objs1 = Account.objects.filter(sponsor=user)
@@ -188,4 +221,4 @@ class LevelFive(APIView):
 
         objs = Account.objects.filter(id__in=l)
         serializer = UserSerializer(objs, many=True)
-        return Response(serializer.data)
+        return Response({"data": serializer.data})

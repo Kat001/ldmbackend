@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'ldmbackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "test",
+        'NAME': "ldm",
         'USER': "postgres",
         'PASSWORD': "2012",
         'HOST': 'localhost',

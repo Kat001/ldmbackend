@@ -47,7 +47,7 @@ class FundTransferHistory(models.Model):
 
 
 class PurchasedPackages(models.Model):
-    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField(default=0)
     is_withdrawal = models.BooleanField(default=False)

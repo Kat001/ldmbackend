@@ -8,6 +8,7 @@ from . import views
 
 urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('return-pack/', views.ReturnPack, name='api_token_auth'),
     path('level-1/', views.LevelOne.as_view(),),
     path('level-2/', views.LevelTwo.as_view(),),
     path('level-3/', views.LevelThree.as_view(),),
