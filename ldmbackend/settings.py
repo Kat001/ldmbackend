@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'Accounts',
     'api',
     'payment',
+    'admin_panel',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ldmbackend.wsgi.application'
+COINPAYMENTS_API_KEY = '4b4f7c51d0583384f082cc6894b40149063f17036da52bd7b7965a18fc53e89d'
+COINPAYMENTS_API_SECRET = 'b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd7763F604cA4bd'
+
 
 
 # Database

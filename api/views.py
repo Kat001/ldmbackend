@@ -4,20 +4,96 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from Accounts.models import Account
-from .models import Fund, LevelIncome, PurchasedPackages
-from .serializers import UserSerializer, PackageSerializer
+from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome
+from .serializers import UserSerializer, PackageSerializer,RoiSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
 
-class ReturnPack(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+class TransferFund(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        trans_user = str(request.data['username'])
+        amount = float(request.data['fund'])
+
+        try:
+            trans_obj = Account.objects.get(username=trans_user)
+            fund_obj_trans = Fund.objects.get(user = trans_obj)
+            fund_obj_user = Fund.objects.get(user=user)
+            if(float(fund_obj_user.available_fund >= amount)):
+                fund_obj_user.available_fund -= amount
+                fund_obj_trans.available_fund += amount
+                fund_obj_user.save()
+                fund_obj_trans.save()
+                return Response({'message': "success"}, status=200)
+
+            else:
+                return Response({'message': "You do not have enough balance to send!!"}, status=201)
+
+        except Exception as e:
+            print("ijiosd----->",e)
+            return Response({'message': str(e)}, status=404)
+        
+ 
+
+        return Response({'data': serializer.data}, status=200)
+
+
+
+
+
+class MainPage(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")  # request.user
+        user = request.user
+        profit = user.total_level_income + user.total_roi_income
+
+        return Response({'total_income': user.refund,
+                          'total_withdrawal':user.total_withdrawal,
+                          'total_profit' : profit,
+        }, status=200)
+
+
+class CheckDailyIncome(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        amount = float(request.data['amount'])
+        print(amount)
+        roi_income = AllRoiIncome.objects.filter(user=user,package_amount = amount)
+        serializer = RoiSerializer(roi_income, many=True)
+
+        return Response({'data': serializer.data}, status=200)
+
+
+
+
+class UserDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        packages = PurchasedPackages.objects.filter(user=user)
+        serializer = PackageSerializer(packages, many=True)
+
+        return Response({'data': serializer.data}, status=200)
+
+class ReturnPack(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
         packages = PurchasedPackages.objects.filter(user=user)
         serializer = PackageSerializer(packages, many=True)
 
