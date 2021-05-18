@@ -110,7 +110,7 @@ COINPAYMENTS_API_SECRET = 'b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd77
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
     }
 }
 
