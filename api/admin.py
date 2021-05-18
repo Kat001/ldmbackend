@@ -68,9 +68,10 @@ class Bank_Info_Admin(admin.ModelAdmin):
 # admin.site.register(book)
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundTransferHistory, FundTransferHistoryAdmin)
-admin.site.register(DirectIncome, DirectIncomeAdmin)
 admin.site.register(LevelIncome, LevelIncomeAdmin)
 admin.site.register(PurchasedPackages, PurchasedPackagesAdmin)
 # admin.site.register(Bank_Info, Bank_Info_Admin)
 admin.site.register(AllRoiIncome, AllRoiIncomeAdmin)
-admin.site.register(AllRoiOnRoiIncome, AllRoiOnRoiIncomeAdmin)
+# admin.site.register(AllRoiOnRoiIncome, AllRoiOnRoiIncomeAdmin)
+# admin.site.register(DirectIncome, DirectIncomeAdmin)
+

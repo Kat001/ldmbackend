@@ -5,12 +5,37 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.views import APIView
 from Accounts.models import Account
 from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome
-from .serializers import UserSerializer, PackageSerializer,RoiSerializer
+from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
+class LevelIncome1(APIView):
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = Account.objects.get(username="admin")#request.user
+        
+        leveincome = LevelIncome.objects.filter(user = user)
+        serializer = LevelIncomeSerializer(leveincome, many=True)
+
+        return Response(serializer.data, status=200)
+
+
+class UserProfile(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        fund_obj = Fund.objects.get(user=user)
+
+        return Response({'name': str(user.first_name) + " " + str(user.last_name),
+                          'fund':fund_obj.available_fund,
+                          'phone' : user.phon_no,
+        }, status=200)
 
 class TransferFund(APIView):
     authentication_classes = [TokenAuthentication]
@@ -53,7 +78,7 @@ class MainPage(APIView):
 
     def get(self, request, format=None):
         user = request.user
-        profit = user.total_level_income + user.total_roi_income
+        profit = user.total_level_income + user.total_roi_income + 7
 
         return Response({'total_income': user.refund,
                           'total_withdrawal':user.total_withdrawal,

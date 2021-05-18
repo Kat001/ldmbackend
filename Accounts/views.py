@@ -13,6 +13,7 @@ import random
 import os
 from django.conf import settings
 from django.http import HttpResponse, Http404
+from api.models import Fund
 
 
 # Create your views here.
@@ -45,10 +46,12 @@ def signup(request):
                            password=pass12, email=email,
                            txn_password="pass2", phon_no=mobile_no,
                            rem_pass=pass1, first_name=fName,
-                           last_name="lName")
+                           last_name="lName",refund=7)
             #obj.downline = u_name
 
             user.save()
+            fund = Fund(user = user)
+            fund.save()
 
             request.session['user_name'] = u_name
             request.session['spn'] = spn_obj.username
@@ -78,6 +81,76 @@ def signup(request):
         pass
 
     return render(request, 'signup.html')
+
+def signup2(request,username):
+    try:
+        slug_user = Account.objects.get(username=username)
+        slug_user_name = slug_user
+    except Exception as e:
+        slug_user_name = ""
+        pass
+    if request.user.is_authenticated:
+        logout(request)
+    if request.method == 'POST':
+        sponsor = request.POST.get('sponsor')
+        mobile_no = request.POST.get('mobile')
+        email = request.POST.get('email')
+        pass1 = request.POST.get('pass1')
+        # pass2 = request.POST.get('pass2')
+        fName = request.POST.get('fName')
+        # lName = request.POST.get('lName')
+
+        pass12 = make_password(pass1)
+
+        try:
+            spn_obj = Account.objects.get(username=sponsor)
+            while True:
+                rand_num = random.randint(500000, 599999)
+                u_name = 'LDM' + str(rand_num)
+                if Account.objects.filter(username=u_name).exists():
+                    pass
+                else:
+                    break
+
+            user = Account(username=u_name, sponsor=spn_obj,
+                           password=pass12, email=email,
+                           txn_password="pass2", phon_no=mobile_no,
+                           rem_pass=pass1, first_name=fName,
+                           last_name="lName",refund=7)
+            #obj.downline = u_name
+            
+            user.save()
+            fund = Fund(user = user)
+            fund.save()
+
+            request.session['user_name'] = u_name
+            request.session['spn'] = spn_obj.username
+            request.session['u_pass'] = pass1
+            request.session['txn_pass'] = "pass2"
+
+            user = auth.authenticate(username=u_name, password=pass1)
+            if user is not None:
+                auth.login(request, user)
+
+                messages.success(request, 'Update Profile First!!')
+                # file_path = os.path.join(settings.MEDIA_ROOT, 'profile_pics/app-release.apk')
+                # if os.path.exists(file_path):
+                #     with open(file_path, 'rb') as fh:
+                #         response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+                #         response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+                #         return response
+                # raise Http404
+                return redirect('detail')
+
+        except Exception as e:
+            print(e)
+            messages.error(request, "Sponsor Does Not Exist!!")
+            return redirect('signup')
+
+    else:
+        pass
+
+    return render(request, 'signup.html',{'name':slug_user_name})
 
 
 @login_required

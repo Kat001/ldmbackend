@@ -12,12 +12,14 @@ urlpatterns = [
     path('user-detail/',views.UserDetail.as_view(),),
     path('check-daily-income/',views.CheckDailyIncome.as_view(),),
     path('transfer-fund/', views.TransferFund.as_view(),),
+    path('user-profile/', views.UserProfile.as_view(),),
     path('main-page/', views.MainPage.as_view(),),
     path('level-1/', views.LevelOne.as_view(),),
     path('level-2/', views.LevelTwo.as_view(),),
     path('level-3/', views.LevelThree.as_view(),),
     path('level-4/', views.LevelFour.as_view(),),
     path('level-5/', views.LevelFive.as_view(),),
+    path('level-income/', views.LevelIncome1.as_view(),),
 
 
     # ID Upgradation...........

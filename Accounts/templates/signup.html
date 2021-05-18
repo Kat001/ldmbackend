@@ -40,7 +40,8 @@
 
                 <form action="#" method="post">{% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="sponsor" placeholder="Sponsor" required>
+                        <input type="text" class="form-control" name="sponsor" value="{{name}}" placeholder="Sponsor"
+                            required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-link"></span>
