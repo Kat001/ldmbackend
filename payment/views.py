@@ -13,6 +13,8 @@ from coinpayments import CoinPaymentsAPI
 
 from json import dumps
 import time
+from Accounts.models import Account
+from api.models import Fund
 
 
 import ssl
@@ -20,9 +22,10 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class ExamplePaymentForm(forms.ModelForm):
+    username = forms.CharField(max_length=100)
     class Meta:
         model = Payment
-        fields = ['amount']
+        fields = ['amount','username']
 
 
 '''def cheak(request,context,iid):
@@ -33,7 +36,7 @@ class ExamplePaymentForm(forms.ModelForm):
     return render(request, 'home_templates/payment_result.html', context)'''
 
 
-def create_tx(request, payment):
+def create_tx(request, payment,username):
     context = {}
     try:
         tx = payment.create_tx()
@@ -55,6 +58,7 @@ def create_tx(request, payment):
     request.session['tx_id'] = payment.provider_tx.id
     request.session['address'] = payment.provider_tx.address
     request.session['qr_code'] = payment.provider_tx.qrcode_url
+    request.session['username'] = username
     return redirect('cheak')
 
     # render(request, 'home_templates/payment_result.html', context)
@@ -73,6 +77,8 @@ class PaymentSetupView(FormView):
 
     def form_valid(self, form):
         cl = form.cleaned_data
+        username = cl['username']
+        print(username)
         payment = Payment(currency_original='TRX',
                           currency_paid='TRX',
                           amount=cl['amount'],
@@ -80,7 +86,7 @@ class PaymentSetupView(FormView):
                           status=Payment.PAYMENT_STATUS_PROVIDER_PENDING,
                           )
 
-        return create_tx(self.request, payment)
+        return create_tx(self.request, payment,username)
 
 
 class PaymentList(ListView):
@@ -164,6 +170,7 @@ def cheak(request):
     tx_id = request.session['tx_id']
     address = request.session['address']
     qr_code = request.session['qr_code']
+    username = request.session['username']
 
     i = 0
     i = i+1
@@ -173,8 +180,10 @@ def cheak(request):
 
     k = api.get_tx_info(txid=tx_id)
     d1 = k['result']
+    
     if d1['status'] == 1:
-        return redirect('payment_list')
+        return redirect('success')
+    
     d = {
         'data': k,
         'address': address,
@@ -185,4 +194,13 @@ def cheak(request):
 
 
 def success(request):
+    username = request.session['username']
+    amount = request.session['amount']
+    try:
+        user_obj = Account.objects.get(username = username)
+        fund_obj = Fund.objects.get(user = user_obj)
+        fund_obj.available_fund += int(amount)
+        fund_obj.save()
+    except Exception as e:
+        pass
     return render(request, 'home_templates/success.html')

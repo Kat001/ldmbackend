@@ -8,7 +8,7 @@ from . import views
 urlpatterns = [
 
     url(r'', include('django_coinpayments.urls', namespace='django_coinpayments')),
-    url(r'^$', PaymentSetupView.as_view(), name='payment_setup'),
+    url('^$', PaymentSetupView.as_view(), name='payment_setup'),
     url(r'^payments/$', PaymentList.as_view(), name='payment_list'),
     url(r'^payment/(?P<pk>[0-9a-f-]+)$',
         PaymentDetail.as_view(), name='payment_detail'),
