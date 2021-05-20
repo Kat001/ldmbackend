@@ -21,7 +21,7 @@ class LevelIncome1(APIView):
         leveincome = LevelIncome.objects.filter(user = user)
         serializer = LevelIncomeSerializer(leveincome, many=True)
 
-        return Response(serializer.data, status=200)
+        return Response({"data":serializer.data}, status=200)
 
 
 class UserProfile(APIView):
@@ -35,6 +35,7 @@ class UserProfile(APIView):
         return Response({'name': str(user.first_name) + " " + str(user.last_name),
                           'fund':fund_obj.available_fund,
                           'phone' : user.phon_no,
+                          'username':user.username,
         }, status=200)
 
 class TransferFund(APIView):

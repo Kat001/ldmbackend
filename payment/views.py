@@ -36,7 +36,7 @@ class ExamplePaymentForm(forms.ModelForm):
     return render(request, 'home_templates/payment_result.html', context)'''
 
 
-def create_tx(request, payment,username):
+def create_tx(request, payment,username,amt):
     context = {}
     try:
         tx = payment.create_tx()
@@ -59,6 +59,7 @@ def create_tx(request, payment,username):
     request.session['address'] = payment.provider_tx.address
     request.session['qr_code'] = payment.provider_tx.qrcode_url
     request.session['username'] = username
+    request.session['amount'] = float(amt)
     return redirect('cheak')
 
     # render(request, 'home_templates/payment_result.html', context)
@@ -78,6 +79,7 @@ class PaymentSetupView(FormView):
     def form_valid(self, form):
         cl = form.cleaned_data
         username = cl['username']
+        amt = cl['amount']
         print(username)
         payment = Payment(currency_original='TRX',
                           currency_paid='TRX',
@@ -86,7 +88,7 @@ class PaymentSetupView(FormView):
                           status=Payment.PAYMENT_STATUS_PROVIDER_PENDING,
                           )
 
-        return create_tx(self.request, payment,username)
+        return create_tx(self.request, payment,username,amt)
 
 
 class PaymentList(ListView):
@@ -199,7 +201,7 @@ def success(request):
     try:
         user_obj = Account.objects.get(username = username)
         fund_obj = Fund.objects.get(user = user_obj)
-        fund_obj.available_fund += int(amount)
+        fund_obj.available_fund += float(amount)
         fund_obj.save()
     except Exception as e:
         pass
