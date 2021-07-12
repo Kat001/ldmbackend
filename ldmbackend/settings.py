@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'api',
     'payment',
     'admin_panel',
+    'home',
 ]
 
 MIDDLEWARE = [

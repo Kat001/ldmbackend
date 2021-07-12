@@ -74,7 +74,6 @@ class AllRoiOnRoiIncome(models.Model):
         Account, on_delete=models.CASCADE, related_name="FromUser")
     amount = models.FloatField(default=0)
     income = models.FloatField(default=0)
-    level = models.CharField(max_length=5, default="")
 
     def __str__(self):
         return self.user.username

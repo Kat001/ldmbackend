@@ -36,6 +36,9 @@ class UserProfile(APIView):
                           'fund':fund_obj.available_fund,
                           'phone' : user.phon_no,
                           'username':user.username,
+                          'first_name':str(user.first_name),
+                          'last_name':str(user.last_name),
+                          'email':str(user.email),
         }, status=200)
 
 class TransferFund(APIView):
@@ -131,18 +134,16 @@ class PurchasePackage(APIView):
     permission_classes = [IsAuthenticated]
 
     def defineDays(self, amount):
-        if amount == 50:
-            return 67
+        if amount == 10:
+            return 200
+        elif amount == 50:
+            return 150
         elif amount == 100:
-            return 67
+            return 150
         elif amount == 500:
-            return 50
+            return 100
         elif amount == 1000:
-            return 50
-        elif amount == 5000:
-            return 40
-        elif amount == 10000:
-            return 40
+            return 100
 
     def post(self, request, format=None):
         user = request.user
@@ -158,7 +159,6 @@ class PurchasePackage(APIView):
                 user.is_active1 = True
 
                 # Assign Level Income................
-
                 i = 5
                 obj = user
                 while obj.sponsor != None and i != 0:
@@ -172,7 +172,7 @@ class PurchasePackage(APIView):
                                 user=obj, level='1', amount=income, activated_user=user)
                             levelIncome_obj.save()
                         if i == 4:
-                            income = (int(amount)*2/100)
+                            income = (int(amount)*5/100)
                             obj.total_level_income += income
                             obj.refund += income
                             levelIncome_obj = LevelIncome(
