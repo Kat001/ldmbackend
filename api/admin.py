@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Fund, FundTransferHistory, DirectIncome, LevelIncome, PurchasedPackages, Bank_Info, AllRoiIncome, AllRoiOnRoiIncome, book
-
+from .models import Links,Tasks
 # Register your models here.
 
 
@@ -48,7 +48,7 @@ class AllRoiIncomeAdmin(admin.ModelAdmin):
 
 
 class AllRoiOnRoiIncomeAdmin(admin.ModelAdmin):
-    list_display = ('user', 'from_user', 'level', 'date', 'income', 'amount')
+    list_display = ('user', 'from_user', 'date', 'income', 'amount')
     search_fields = ('user',)
     list_filter = ()
     fieldsets = ()
@@ -65,13 +65,15 @@ class Bank_Info_Admin(admin.ModelAdmin):
 		return False'''
 
 
-# admin.site.register(book)
+admin.site.register(Links)
+admin.site.register(Tasks)
+
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundTransferHistory, FundTransferHistoryAdmin)
 admin.site.register(LevelIncome, LevelIncomeAdmin)
 admin.site.register(PurchasedPackages, PurchasedPackagesAdmin)
 # admin.site.register(Bank_Info, Bank_Info_Admin)
 admin.site.register(AllRoiIncome, AllRoiIncomeAdmin)
-# admin.site.register(AllRoiOnRoiIncome, AllRoiOnRoiIncomeAdmin)
+admin.site.register(AllRoiOnRoiIncome, AllRoiOnRoiIncomeAdmin)
 # admin.site.register(DirectIncome, DirectIncomeAdmin)
 

@@ -59,7 +59,7 @@ class PurchasedPackages(models.Model):
 
 class AllRoiIncome(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
     amount = models.FloatField(default=0)
     package_amount = models.FloatField(default=0)
 
@@ -69,7 +69,7 @@ class AllRoiIncome(models.Model):
 
 class AllRoiOnRoiIncome(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
     from_user = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="FromUser")
     amount = models.FloatField(default=0)
@@ -112,3 +112,23 @@ class book(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Links(models.Model):
+    link1 = models.CharField(max_length=300,null=True,blank=True)
+    link2 = models.CharField(max_length=300,null=True,blank=True)
+    link3 = models.CharField(max_length=300,null=True,blank=True)
+    link4 = models.CharField(max_length=300,null=True,blank=True)
+    link5 = models.CharField(max_length=300,null=True,blank=True)
+    link6 = models.CharField(max_length=300,null=True,blank=True)
+    link7 = models.CharField(max_length=300,null=True,blank=True)
+
+
+class Tasks(models.Model):
+    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    isCompleted = models.BooleanField(default=False)
+    createdOn = models.DateTimeField(auto_now_add=True)
+    linkClicked = models.ManyToManyField(Links)
+
+    def __str__(self):
+        return user.username

@@ -4,19 +4,24 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from Accounts.models import Account
-from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome
-from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer
+from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome
+from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView,RetrieveAPIView
+from rest_framework import generics, permissions
+from django.contrib.auth.hashers import check_password
+
+
 
 # Create your views here.
 
 class LevelIncome1(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")#request.user
+        user = request.user
         
         leveincome = LevelIncome.objects.filter(user = user)
         serializer = LevelIncomeSerializer(leveincome, many=True)
@@ -32,6 +37,11 @@ class UserProfile(APIView):
         user = request.user
         fund_obj = Fund.objects.get(user=user)
 
+        if user.sponsor is None:
+            sponsor = "admin"
+        else:
+            sponsor = str(user.sponsor.username)
+
         return Response({'name': str(user.first_name) + " " + str(user.last_name),
                           'fund':fund_obj.available_fund,
                           'phone' : user.phon_no,
@@ -39,6 +49,9 @@ class UserProfile(APIView):
                           'first_name':str(user.first_name),
                           'last_name':str(user.last_name),
                           'email':str(user.email),
+                          'address':str(user.address),
+                          'sponsor': sponsor,
+                          'registration':str(user.date_joined)
         }, status=200)
 
 class TransferFund(APIView):
@@ -117,6 +130,16 @@ class UserDetail(APIView):
 
         return Response({'data': serializer.data}, status=200)
 
+class RoiOnRoi(APIView):
+
+    def get(self, request, format=None):
+        user = request.user
+        roi = AllRoiOnRoiIncome.objects.filter(user=user)
+        serializer = RoiOnRoiIncomeSerializer(roi, many=True)
+
+        return Response({'data': serializer.data}, status=200)
+
+
 class ReturnPack(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -137,9 +160,9 @@ class PurchasePackage(APIView):
         if amount == 10:
             return 200
         elif amount == 50:
-            return 150
+            return 125
         elif amount == 100:
-            return 150
+            return 125
         elif amount == 500:
             return 100
         elif amount == 1000:
@@ -149,6 +172,13 @@ class PurchasePackage(APIView):
         user = request.user
         amount = request.data['amount']
 
+        # Check That package is already purchased........
+        try:
+            package = PurchasedPackages.objects.get(user=user,amount=int(amount))
+            return Response({'message': "This Package is already Purchased!!"}, status=404)
+        except Exception as e:
+            pass
+  
         try:
             fund_obj = Fund.objects.get(user=user)
             if(fund_obj.available_fund >= amount):
@@ -218,7 +248,7 @@ class PurchasePackage(APIView):
             print(str(e))
 
         # serializer = UserSerializer(directUsers, many=True)
-        return Response({"message": "hghgs"}, status=404)
+        return Response({"message": "Contact to admin"}, status=404)
 
 
 class LevelOne(APIView):
@@ -324,3 +354,48 @@ class LevelFive(APIView):
         objs = Account.objects.filter(id__in=l)
         serializer = UserSerializer(objs, many=True)
         return Response({"data": serializer.data})
+
+
+# Register API
+class RegisterAPI(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # Sending the email........(mailgun is not free so i do not have credentials)
+        # msg = "Your Account has been created successfully!"
+        # send_mail('account', msg, 'noreply@bottlenose.co', ['vitor@freitas.com'])
+        #
+        # print("message send successfully!!")
+        if user == 'error':
+            return Response({'message':"error"},status=404)
+
+
+        return Response({
+        "user": UserSerializer(user, context=self.get_serializer_context()).data,
+        },status=200)
+
+class ChangePassword(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        currentPassword = str(request.data['cPassword'])
+        newPassword = str(request.data['nPassword'])
+
+        #check password...
+        isPass = user.check_password(currentPassword)
+        print(isPass)
+        
+        if isPass:
+            user.set_password(newPassword)
+            user.save()
+            return Response({'data':"Password Changed successfully!!"},status=200)
+
+        else:
+            return Response({'data':"Old password is not correct!!"},status=404)
+

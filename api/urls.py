@@ -4,9 +4,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token  # <-- Here
 from . import views
+from .views import RegisterAPI
+
 
 
 urlpatterns = [
+    # register............
+    path('register/', RegisterAPI.as_view(), name='register'),
+    path('change-password/', views.ChangePassword.as_view()),
+
+
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('return-pack/', views.ReturnPack.as_view(),),
     path('user-detail/',views.UserDetail.as_view(),),
@@ -20,6 +27,8 @@ urlpatterns = [
     path('level-4/', views.LevelFour.as_view(),),
     path('level-5/', views.LevelFive.as_view(),),
     path('level-income/', views.LevelIncome1.as_view(),),
+
+    path('roi-on-roi/',views.RoiOnRoi.as_view(),),
 
 
     # ID Upgradation...........
