@@ -1,4 +1,4 @@
-from api.models import PurchasedPackages,AllRoiIncome,LevelIncome,AllRoiOnRoiIncome
+from api.models import PurchasedPackages,AllRoiIncome,LevelIncome,AllRoiOnRoiIncome,Links
 from Accounts.models import Account
 from rest_framework import fields, serializers
 from django.contrib.auth.hashers import make_password,check_password
@@ -19,6 +19,11 @@ class PackageSerializer(serializers.ModelSerializer):
 class RoiSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllRoiIncome
+        fields = '__all__'
+
+class LinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Links
         fields = '__all__'
 
 class LevelIncomeSerializer(serializers.ModelSerializer):

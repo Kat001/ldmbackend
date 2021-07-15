@@ -29,6 +29,7 @@ urlpatterns = [
     path('level-income/', views.LevelIncome1.as_view(),),
 
     path('roi-on-roi/',views.RoiOnRoi.as_view(),),
+    path('link-click/',views.LinkClicked.as_view(),),
 
 
     # ID Upgradation...........

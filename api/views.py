@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from Accounts.models import Account
-from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome
-from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer
+from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome,Links
+from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer,LinkSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveAPIView
@@ -149,7 +149,14 @@ class ReturnPack(APIView):
         packages = PurchasedPackages.objects.filter(user=user)
         serializer = PackageSerializer(packages, many=True)
 
-        return Response({'data': serializer.data}, status=200)
+        # Send links also...
+        links = Links.objects.all()
+        serializerLink = LinkSerializer(links,many=True)
+
+        return Response({
+            'data': serializer.data,
+            'links': serializerLink.data,
+        }, status=200)
 
 
 class PurchasePackage(APIView):
@@ -398,4 +405,16 @@ class ChangePassword(APIView):
 
         else:
             return Response({'data':"Old password is not correct!!"},status=404)
+
+class LinkClicked(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        amount = int(request.data['amount'])
+        package = PurchasedPackages.objects.get(user=user,amount=amount)
+        package.clickedLinks += 1
+        package.save()
+        return Response({"message": "successfully Clicked!!"},status=200)
 

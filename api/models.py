@@ -52,6 +52,7 @@ class PurchasedPackages(models.Model):
     amount = models.FloatField(default=0)
     is_withdrawal = models.BooleanField(default=False)
     days = models.IntegerField(default=0,null=True,blank=True)
+    clickedLinks = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
@@ -123,12 +124,12 @@ class Links(models.Model):
     link6 = models.CharField(max_length=300,null=True,blank=True)
     link7 = models.CharField(max_length=300,null=True,blank=True)
 
-
 class Tasks(models.Model):
-    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    package = models.ForeignKey(PurchasedPackages, on_delete=models.CASCADE)
     isCompleted = models.BooleanField(default=False)
     createdOn = models.DateTimeField(auto_now_add=True)
     linkClicked = models.ManyToManyField(Links)
 
     def __str__(self):
-        return user.username
+        return package.amount
+
