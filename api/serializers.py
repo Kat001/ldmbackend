@@ -59,7 +59,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                     break
             user = Account(username = u_name,sponsor=sponsor,first_name=validated_data['first_name'], 
                             last_name=validated_data['last_name'],email=validated_data['email'],
-                            phon_no=validated_data['phon_no'],password=pass12)
+                            phon_no=validated_data['phon_no'],password=pass12,refund=0.5)
             user.save() 
             fund = Fund(user = user)
             fund.save()

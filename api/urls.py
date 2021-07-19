@@ -35,5 +35,13 @@ urlpatterns = [
     # ID Upgradation...........
     path('purchase-package/', views.PurchasePackage.as_view(),),
 
+    # Download Apk
+    path('download-apk/',views.Downloadapk, name="downloadapk"),
+
+    # Signed Up
+    path('sign-up/',views.Signup, name="Signup"),
+
+    # links
+    path('links/',views.ReturnLinks.as_view(),),
 
 ]

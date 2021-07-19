@@ -95,11 +95,10 @@ class MainPage(APIView):
 
     def get(self, request, format=None):
         user = request.user
-        profit = user.total_level_income + user.total_roi_income + 7
 
         return Response({'total_income': user.refund,
                           'total_withdrawal':user.total_withdrawal,
-                          'total_profit' : profit,
+                          'total_profit' : user.refund,
         }, status=200)
 
 
@@ -115,8 +114,6 @@ class CheckDailyIncome(APIView):
         serializer = RoiSerializer(roi_income, many=True)
 
         return Response({'data': serializer.data}, status=200)
-
-
 
 
 class UserDetail(APIView):
@@ -155,6 +152,18 @@ class ReturnPack(APIView):
 
         return Response({
             'data': serializer.data,
+            'links': serializerLink.data,
+        }, status=200)
+
+class ReturnLinks(APIView):
+
+    def get(self, request, format=None):
+
+        # Send links also...
+        links = Links.objects.all()
+        serializerLink = LinkSerializer(links,many=True)
+
+        return Response({
             'links': serializerLink.data,
         }, status=200)
 
@@ -418,3 +427,11 @@ class LinkClicked(APIView):
         package.save()
         return Response({"message": "successfully Clicked!!"},status=200)
 
+
+def Downloadapk(request):
+    print("Download apk........")
+    return render(request,'download.html')
+
+def Signup(request):
+    print("signup form")
+    return render(request,'signup.html')
