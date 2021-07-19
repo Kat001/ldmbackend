@@ -11,7 +11,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveAPIView
 from rest_framework import generics, permissions
 from django.contrib.auth.hashers import check_password
-
+import os
+from django.conf import settings
+from django.http import HttpResponse, Http404
 
 
 # Create your views here.
@@ -430,6 +432,13 @@ class LinkClicked(APIView):
 
 def Downloadapk(request):
     print("Download apk........")
+    file_path = os.path.join(settings.MEDIA_ROOT, 'profile_pics/app-release.apk')
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
     return render(request,'download.html')
 
 def Signup(request):

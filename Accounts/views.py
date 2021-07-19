@@ -28,7 +28,7 @@ def signup(request):
         pass1 = request.POST.get('pass1')
         # pass2 = request.POST.get('pass2')
         fName = request.POST.get('fName')
-        # lName = request.POST.get('lName')
+        lName = request.POST.get('lName')
 
         pass12 = make_password(pass1)
 
@@ -36,7 +36,7 @@ def signup(request):
             spn_obj = Account.objects.get(username=sponsor)
             while True:
                 rand_num = random.randint(500000, 599999)
-                u_name = 'LDM' + str(rand_num)
+                u_name = 'CC' + str(rand_num)
                 if Account.objects.filter(username=u_name).exists():
                     pass
                 else:
@@ -46,7 +46,7 @@ def signup(request):
                            password=pass12, email=email,
                            txn_password="pass2", phon_no=mobile_no,
                            rem_pass=pass1, first_name=fName,
-                           last_name="lName",refund=7)
+                           last_name=lName,refund=0.5)
             #obj.downline = u_name
 
             user.save()
@@ -98,7 +98,7 @@ def signup2(request,username):
         pass1 = request.POST.get('pass1')
         # pass2 = request.POST.get('pass2')
         fName = request.POST.get('fName')
-        # lName = request.POST.get('lName')
+        lName = request.POST.get('lName')
 
         pass12 = make_password(pass1)
 
@@ -106,7 +106,7 @@ def signup2(request,username):
             spn_obj = Account.objects.get(username=sponsor)
             while True:
                 rand_num = random.randint(500000, 599999)
-                u_name = 'LDM' + str(rand_num)
+                u_name = 'CC' + str(rand_num)
                 if Account.objects.filter(username=u_name).exists():
                     pass
                 else:
@@ -116,7 +116,7 @@ def signup2(request,username):
                            password=pass12, email=email,
                            txn_password="pass2", phon_no=mobile_no,
                            rem_pass=pass1, first_name=fName,
-                           last_name="lName",refund=7)
+                           refund=0.5,last_name=lName)
             #obj.downline = u_name
             
             user.save()
