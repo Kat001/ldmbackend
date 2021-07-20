@@ -13,6 +13,8 @@ class Command(BaseCommand):
         try:
             if package.amount >= r_obj.package_amount:
                 obj = AllRoiOnRoiIncome(user=user,from_user=r_obj.user,income=r_obj.amount)
+                user.refund += r_obj.amount
+                user.save()
                 obj.save()
         except Exception as e:
             print("error-->",e)
@@ -59,6 +61,7 @@ class Command(BaseCommand):
                     account_obj.total_roi_income += income
                     account_obj.save()
                     r_obj.save()
+                    obj.clickedLinks = 0
                     obj.save()
                     self.send_roi_on_roi(r_obj)
         print("Done!!!!!")
