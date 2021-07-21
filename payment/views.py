@@ -81,8 +81,8 @@ class PaymentSetupView(FormView):
         username = cl['username']
         amt = cl['amount']
         print(username)
-        payment = Payment(currency_original='TRX',
-                          currency_paid='TRX',
+        payment = Payment(currency_original='BUSD.BEP20',
+                          currency_paid='BUSD.BEP20',
                           amount=cl['amount'],
                           amount_paid=Decimal(0),
                           status=Payment.PAYMENT_STATUS_PROVIDER_PENDING,
