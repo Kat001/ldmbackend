@@ -27,10 +27,10 @@ class LinkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LevelIncomeSerializer(serializers.ModelSerializer):
-    from_user = UserSerializer
+    activated_user = UserSerializer()
     class Meta:
         model = LevelIncome
-        fields = ('date', 'amount', 'level', 'from_user')
+        fields = ('user', 'date', 'amount', 'level', 'activated_user')
 
 class RoiOnRoiIncomeSerializer(serializers.ModelSerializer):
     from_user = UserSerializer()
