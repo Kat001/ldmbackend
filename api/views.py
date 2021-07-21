@@ -101,6 +101,7 @@ class MainPage(APIView):
         return Response({'total_income': user.refund,
                           'total_withdrawal':user.total_withdrawal,
                           'total_profit' : user.refund,
+                          'username' : user.username,
         }, status=200)
 
 
