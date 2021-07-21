@@ -42,8 +42,8 @@ def create_tx(request, payment,username,amt):
         tx = payment.create_tx()
         print(tx, type(tx))
 
-        api = CoinPaymentsAPI(public_key='4b4f7c51d0583384f082cc6894b40149063f17036da52bd7b7965a18fc53e89d',
-                              private_key='b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd7763F604cA4bd')
+        api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12',
+                              private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
 
         payment.status = Payment.PAYMENT_STATUS_PENDING
         payment.save()
@@ -109,8 +109,8 @@ def create_new_payment(request, pk):
 
 
 def index(request):
-    pub_key = '4b4f7c51d0583384f082cc6894b40149063f17036da52bd7b7965a18fc53e89d'
-    pri_key = 'b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd7763F604cA4bd'
+    pub_key = '3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12'
+    pri_key = 'f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e'
 
     client = CryptoPayments(pub_key, pri_key,)
 
@@ -118,8 +118,8 @@ def index(request):
 
 
 '''def cheak(request, txid):
-    pub_key = '4b4f7c51d0583384f082cc6894b40149063f17036da52bd7b7965a18fc53e89d'
-    pri_key = 'b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd7763F604cA4bd'
+    pub_key = '3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12'
+    pri_key = 'f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e'
 
     if not txid:
         return False
@@ -177,8 +177,8 @@ def cheak(request):
     i = 0
     i = i+1
 
-    api = CoinPaymentsAPI(public_key='4b4f7c51d0583384f082cc6894b40149063f17036da52bd7b7965a18fc53e89d',
-                          private_key='b33162fc07f678eaB1d9aab22e5dc739eDb8a5030a0748e58bd7763F604cA4bd')
+    api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12',
+                          private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
 
     k = api.get_tx_info(txid=tx_id)
     d1 = k['result']

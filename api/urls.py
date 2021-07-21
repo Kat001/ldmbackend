@@ -44,4 +44,7 @@ urlpatterns = [
     # links
     path('links/',views.ReturnLinks.as_view(),),
 
+    #Task details...
+    path('task-detail/',views.TaskDetails.as_view(),)
+
 ]

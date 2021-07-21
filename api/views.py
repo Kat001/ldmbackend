@@ -428,7 +428,10 @@ class LinkClicked(APIView):
         package = PurchasedPackages.objects.get(user=user,amount=amount)
         package.clickedLinks += 1
         package.save()
-        return Response({"message": "successfully Clicked!!"},status=200)
+        return Response({
+            "message" : "successfully Clicked!!",
+            "clicks" : package.clickedLinks,
+            },status=200)
 
 
 def Downloadapk(request):
@@ -445,3 +448,17 @@ def Downloadapk(request):
 def Signup(request):
     print("signup form")
     return render(request,'signup.html')
+
+class TaskDetails(APIView):
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = Account.objects.get(username="admin")#request.user
+        packages = PurchasedPackages.objects.filter(user=user)
+        serializer = PackageSerializer(packages, many=True)
+
+        return Response({
+            'data' : serializer.data,
+            })
+
