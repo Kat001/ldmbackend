@@ -450,11 +450,11 @@ def Signup(request):
     return render(request,'signup.html')
 
 class TaskDetails(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")#request.user
+        user = request.user
         packages = PurchasedPackages.objects.filter(user=user)
         serializer = PackageSerializer(packages, many=True)
 

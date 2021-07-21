@@ -39,7 +39,7 @@ class ExamplePaymentForm(forms.ModelForm):
 def create_tx(request, payment,username,amt):
     context = {}
     try:
-        tx = payment.create_tx()
+        tx = payment.create_tx(buyer_email='finder@gmail.com',)
         print(tx, type(tx))
 
         api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12',
