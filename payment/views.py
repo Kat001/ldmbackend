@@ -1,6 +1,6 @@
 from django import forms
 from django.shortcuts import render, redirect
-
+from django.contrib import messages
 from django_coinpayments.models import Payment
 from django_coinpayments.exceptions import CoinPaymentsProviderError
 from django.views.generic import FormView, ListView, DetailView
@@ -17,6 +17,7 @@ from json import dumps
 import time
 from Accounts.models import Account
 from api.models import Fund
+from django import forms
 
 
 
@@ -25,12 +26,18 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class ExamplePaymentForm(forms.ModelForm):
+    user_name = forms.CharField(label='user_name', max_length=100)
     class Meta:
         model = Payment
-        fields = ['amount']
+        fields = ['amount','user_name']
 
 
 def create_tx(request, payment,amt,username):
+    try:
+        user_obj = Account.objects.get(username=username)
+    except:
+        messages.error(request,'User is not available!!')
+        return redirect("payment_setup")
     context = {}
     try:
         tx = payment.create_tx(buyer_email='finder@gmail.com',)
@@ -74,7 +81,7 @@ class PaymentSetupView(FormView):
     def form_valid(self, form):
         cl = form.cleaned_data
         amt = cl['amount']
-        username = cl['username']
+        username = cl['user_name']
         print(cl,amt)
         payment = Payment(currency_original='BUSD.BEP20',
                           currency_paid='BUSD.BEP20',
