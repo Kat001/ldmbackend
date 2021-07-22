@@ -30,7 +30,7 @@ class ExamplePaymentForm(forms.ModelForm):
         fields = ['amount']
 
 
-def create_tx(request, payment,amt):
+def create_tx(request, payment,amt,username):
     context = {}
     try:
         tx = payment.create_tx(buyer_email='finder@gmail.com',)
@@ -54,6 +54,7 @@ def create_tx(request, payment,amt):
     request.session['address'] = payment.provider_tx.address
     request.session['qr_code'] = payment.provider_tx.qrcode_url
     request.session['amount'] = float(amt)
+    request.session['username'] = username
     return redirect('cheak')
 
     # render(request, 'home_templates/payment_result.html', context)
@@ -73,6 +74,7 @@ class PaymentSetupView(FormView):
     def form_valid(self, form):
         cl = form.cleaned_data
         amt = cl['amount']
+        username = cl['username']
         print(cl,amt)
         payment = Payment(currency_original='BUSD.BEP20',
                           currency_paid='BUSD.BEP20',
@@ -81,7 +83,7 @@ class PaymentSetupView(FormView):
                           status=Payment.PAYMENT_STATUS_PROVIDER_PENDING,
                           )
 
-        return create_tx(self.request, payment,amt)
+        return create_tx(self.request, payment,amt,username)
 
 
 class PaymentList(ListView):
@@ -189,11 +191,11 @@ def cheak(request):
 
 
 def success(request):
-    user_obj = request.user
+    username = request.session['username']
     amount = request.session['amount']
    
     try:
-        
+        user_obj = Account.objects.get(username=username)
         fund_obj = Fund.objects.get(user = user_obj)
         fund_obj.available_fund += float(amount)
         fund_obj.save()
