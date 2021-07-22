@@ -10,6 +10,8 @@ import requests
 import json
 
 from coinpayments import CoinPaymentsAPI
+from django.contrib import messages
+
 
 from json import dumps
 import time
@@ -17,26 +19,18 @@ from Accounts.models import Account
 from api.models import Fund
 
 
+
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class ExamplePaymentForm(forms.ModelForm):
-    username = forms.CharField(max_length=100)
     class Meta:
         model = Payment
-        fields = ['amount','username']
+        fields = ['amount']
 
 
-'''def cheak(request,context,iid):
-    print(iid.status_url)
-    r = requests.get(url = iid.status_url)
-    #json_data = json.loads(r.text)
-    #print(json_data)
-    return render(request, 'home_templates/payment_result.html', context)'''
-
-
-def create_tx(request, payment,username,amt):
+def create_tx(request, payment,amt):
     context = {}
     try:
         tx = payment.create_tx(buyer_email='finder@gmail.com',)
@@ -52,13 +46,13 @@ def create_tx(request, payment,username,amt):
         context['object'] = payment
         context['tx'] = tx
 
-    except CoinPaymentsProviderError as e:
+    except Exception as e:
+        print("EEERR--->",e)
         context['error'] = e
 
     request.session['tx_id'] = payment.provider_tx.id
     request.session['address'] = payment.provider_tx.address
     request.session['qr_code'] = payment.provider_tx.qrcode_url
-    request.session['username'] = username
     request.session['amount'] = float(amt)
     return redirect('cheak')
 
@@ -78,9 +72,8 @@ class PaymentSetupView(FormView):
 
     def form_valid(self, form):
         cl = form.cleaned_data
-        username = cl['username']
         amt = cl['amount']
-        print(username)
+        print(cl,amt)
         payment = Payment(currency_original='BUSD.BEP20',
                           currency_paid='BUSD.BEP20',
                           amount=cl['amount'],
@@ -88,7 +81,7 @@ class PaymentSetupView(FormView):
                           status=Payment.PAYMENT_STATUS_PROVIDER_PENDING,
                           )
 
-        return create_tx(self.request, payment,username,amt)
+        return create_tx(self.request, payment,amt)
 
 
 class PaymentList(ListView):
@@ -172,7 +165,6 @@ def cheak(request):
     tx_id = request.session['tx_id']
     address = request.session['address']
     qr_code = request.session['qr_code']
-    username = request.session['username']
 
     i = 0
     i = i+1
@@ -181,6 +173,7 @@ def cheak(request):
                           private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
 
     k = api.get_tx_info(txid=tx_id)
+    print("datat---->",k)
     d1 = k['result']
     
     if d1['status'] == 1:
@@ -196,13 +189,51 @@ def cheak(request):
 
 
 def success(request):
-    username = request.session['username']
+    user_obj = request.user
     amount = request.session['amount']
+   
     try:
-        user_obj = Account.objects.get(username = username)
+        
         fund_obj = Fund.objects.get(user = user_obj)
         fund_obj.available_fund += float(amount)
         fund_obj.save()
     except Exception as e:
         pass
     return render(request, 'home_templates/success.html')
+
+def withdrawal(request):
+    user = request.user
+    try:
+        if request.method == 'POST':
+            package = PurchasedPackages.objects.get(user=user)
+            walletAddress = request.POST.get('walletAddress')
+            amount = request.POST.get('amount')
+            password = request.POST.get('password')
+            u_txn = user.txn_password
+            if password == u_txn:
+                if float(amount)<=user.refund and float(amount)>=10:
+                    api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12',
+                      private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
+                    res = api.create_withdrawal(amount=amount,currency="TRX",address=walletAddress)
+                    if res['error'] == 'ok':
+                        withdrawal = Withdrawal(user = user,amount=amount,address=walletAddress)
+                        withdrawal.save()
+                        user.refund -= float(amount)
+                        user.save()
+                        package.is_withdrawal = True
+                        package.save()
+                        messages.success(request,'your withdrawal created successfully!!')
+                        return redirect('withdrawal')
+                    else:
+                        pass
+                else:
+                    messages.error(request,'Do not have enough balance to withdrawal!!')
+                    return redirect('withdrawal')
+            else:
+                print("this is callled")
+                messages.error(request,'Wrong transection password!!')
+                return redirect('withdrawal')
+    except Exception as e:
+        messages.error(request,str(e))
+        return redirect('withdrawal')
+    return render(request,'home_templates/withdrawal.html')

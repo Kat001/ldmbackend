@@ -18,4 +18,6 @@ urlpatterns = [
     path('ipn_view', views.ipn_view, name='ipn_view'),
     path('cheak', views.cheak, name='cheak'),
     path('success', views.success, name='success'),
+    # Withdrawal........
+    path('withdrawal',views.withdrawal,name='withdrawal')
 ]

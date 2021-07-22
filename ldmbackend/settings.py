@@ -41,10 +41,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_coinpayments',
     'gunicorn',
-
+    'payment',
     'Accounts',
     'api',
-    'payment',
     'admin_panel',
     'home',
 ]
