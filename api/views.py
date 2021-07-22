@@ -473,7 +473,7 @@ class Withdrawal(APIView):
     def post(self, request, format=None):
         user = request.user
         amount = int(request.data['amount'])
-        wallet_address = "kljhdkshfdkjds"#request.data['wallet_address']
+        wallet_address = request.data['wallet_address']
         try:
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
