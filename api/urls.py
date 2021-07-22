@@ -45,6 +45,9 @@ urlpatterns = [
     path('links/',views.ReturnLinks.as_view(),),
 
     #Task details...
-    path('task-detail/',views.TaskDetails.as_view(),)
+    path('task-detail/',views.TaskDetails.as_view(),),
+
+    #Withdrawal......
+    path('withdrawal/',views.Withdrawal.as_view(),),
 
 ]
