@@ -467,8 +467,8 @@ class TaskDetails(APIView):
 
 
 class Withdrawal(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         user = request.user

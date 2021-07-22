@@ -49,5 +49,6 @@ urlpatterns = [
 
     #Withdrawal......
     path('withdrawal/',views.Withdrawal.as_view(),),
+    path('withdrawal-history/',views.WithdrawalHistory.as_view(),)
 
 ]
