@@ -467,27 +467,31 @@ class TaskDetails(APIView):
 
 
 class Withdrawal(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         user = request.user
         amount = int(request.data['amount'])
-        wallet_address = request.data['wallet_address']
+        wallet_address = "kljhdkshfdkjds"#request.data['wallet_address']
         try:
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
                     private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
                 res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address)
+                print(res)
                 if res['error'] == 'ok':
                     withdrawal = Withdrawal(user = user,amount=amount,address=wallet_address)
                     withdrawal.save()
                     user.refund -= float(amount)
                     user.save()
                     return Response({"message":"success"},status=200)
+                else:
+                    return Response({"message":res['error']},status=201)
             else:
                 return Response({"message":"not enough balance!"},status=201)
         except Exception as e:
+            print(e)
             Response({"message":str(e)},status=401)
 
         return Response({
