@@ -101,7 +101,7 @@ class MainPage(APIView):
     def get(self, request, format=None):
         user = request.user
 
-        return Response({'total_income': user.refund,
+        return Response({'total_income': round(user.refund,3),
                           'total_Withdrawal':round(user.total_withdrawal,3),
                           'total_profit' : round(user.refund,3),
                           'username' : user.username,
