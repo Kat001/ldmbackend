@@ -3,15 +3,16 @@ from django.utils import timezone
 from api.models import PurchasedPackages,AllRoiIncome
 from api.models import AllRoiOnRoiIncome
 from Accounts.models import Account
+from django.db.models import Max
 
 class Command(BaseCommand):
     help = 'Displays current time'
 
     def send_roi_on_roi(r_obj):
         user = r_obj.sponsor
-        package = PurchasedPackages.objects.filter(user=user).last()#Current Active Plan of that user
+        package = PurchasedPackages.objects.filter(user=user).aggregate(Max('amount'))['amount__max']#Current Active Plan of that user
         try:
-            if package.amount >= r_obj.package_amount:
+            if package >= r_obj.package_amount:
                 obj = AllRoiOnRoiIncome(user=user,from_user=r_obj.user,income=r_obj.amount)
                 user.refund += r_obj.amount
                 user.save()

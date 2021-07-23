@@ -484,6 +484,7 @@ class Withdrawal(APIView):
                     Withdrawal = Withdrawal_Record(user = user,amount=amount,address=wallet_address)
                     Withdrawal.save()
                     user.refund -= float(amount)
+                    user.total_withdrawal += amount
                     user.save()
                     return Response({"message":"success"},status=200)
                 else:

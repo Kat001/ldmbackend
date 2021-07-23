@@ -29,7 +29,7 @@ class LevelIncome(models.Model):
         Account, on_delete=models.CASCADE, related_name="activated_iid")
     date = models.DateField(auto_now_add=True)
     level = models.CharField(max_length=10, default="")
-    amount = models.IntegerField(default=0)
+    amount = models.FloatField(default=0)
 
     def __str__(self):
         return self.user.username
