@@ -503,7 +503,7 @@ class WithdrawalHistory(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")#request.user
+        user = request.user
         packages = Withdrawal_Record.objects.filter(user=user)
         serializer = WithdrawalSerializer(packages, many=True)
 
