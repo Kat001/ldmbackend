@@ -441,10 +441,9 @@ def Downloadapk(request):
     print("Download apk........")
     file_path = os.path.join(settings.MEDIA_ROOT, 'profile_pics/app-release.apk')
     if os.path.exists(file_path):
-        with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
-            return response
+        response = HttpResponse(fh, content_type="application/vnd.android.package-archive") 
+        response["Content-disposition"] = "attachment; filename={}".format(os.path.basename(file_path))
+        return response
     raise Http404
     return render(request,'download.html')
 
@@ -478,7 +477,7 @@ class Withdrawal(APIView):
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
                     private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
-                res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address)
+                res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address,auto_confirm=1)
                 print(res)
                 if res['error'] == 'ok':
                     Withdrawal = Withdrawal_Record(user = user,amount=amount,address=wallet_address)
