@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from Accounts.models import Account
-from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome,Links,Withdrawal
+from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome,Links
 from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer,LinkSerializer,WithdrawalSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -15,7 +15,6 @@ import os
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from coinpayments import CoinPaymentsAPI
-from api.models import Withdrawal
 from api.models import Withdrawal_Record
 
 
