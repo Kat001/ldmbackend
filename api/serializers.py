@@ -3,7 +3,7 @@ from Accounts.models import Account
 from rest_framework import fields, serializers
 from django.contrib.auth.hashers import make_password,check_password
 import random
-from api.models import Fund
+from api.models import Fund,Withdrawal_Record
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchasedPackages
+        fields = '__all__'
+
+class WithdrawalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Withdrawal_Record
         fields = '__all__'
 
 class RoiSerializer(serializers.ModelSerializer):

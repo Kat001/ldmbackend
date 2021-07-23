@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from Accounts.models import Account
-from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome,Links
-from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer,LinkSerializer
+from .models import Fund, LevelIncome, PurchasedPackages,AllRoiIncome,AllRoiOnRoiIncome,Links,Withdrawal
+from .serializers import UserSerializer, PackageSerializer,RoiSerializer,LevelIncomeSerializer,RoiOnRoiIncomeSerializer,RegisterSerializer,LinkSerializer,WithdrawalSerializer
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveAPIView
@@ -16,6 +16,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from coinpayments import CoinPaymentsAPI
 from api.models import Withdrawal
+from api.models import Withdrawal_Record
 
 
 
@@ -102,7 +103,7 @@ class MainPage(APIView):
         user = request.user
 
         return Response({'total_income': user.refund,
-                          'total_withdrawal':user.total_withdrawal,
+                          'total_Withdrawal':user.total_Withdrawal,
                           'total_profit' : user.refund,
                           'username' : user.username,
         }, status=200)
@@ -471,9 +472,9 @@ class Withdrawal(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        user = request.user
+        user = Account.objects.get(username="admin")#request.user
         amount = int(request.data['amount'])
-        wallet_address = request.data['wallet_address']
+        wallet_address = "0x949D61132d31fdF9144d605A1BF243606055f939"#request.data['wallet_address']
         try:
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
@@ -481,8 +482,8 @@ class Withdrawal(APIView):
                 res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address)
                 print(res)
                 if res['error'] == 'ok':
-                    withdrawal = Withdrawal(user = user,amount=amount,address=wallet_address)
-                    withdrawal.save()
+                    Withdrawal = Withdrawal_Record(user = user,amount=amount,address=wallet_address)
+                    Withdrawal.save()
                     user.refund -= float(amount)
                     user.save()
                     return Response({"message":"success"},status=200)
@@ -497,3 +498,17 @@ class Withdrawal(APIView):
         return Response({
             'message' : "failed",
             },status=400)
+
+class WithdrawalHistory(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = Account.objects.get(username="admin")#request.user
+        packages = Withdrawal_Record.objects.filter(user=user)
+        serializer = WithdrawalSerializer(packages, many=True)
+
+        return Response({
+            'data' : serializer.data,
+            })
+

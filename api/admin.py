@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Fund, FundTransferHistory, DirectIncome, LevelIncome, PurchasedPackages, Bank_Info, AllRoiIncome, AllRoiOnRoiIncome, book
-from .models import Links,Tasks
+from .models import Links,Tasks,Withdrawal_Record
 # Register your models here.
 
 
@@ -67,6 +67,7 @@ class Bank_Info_Admin(admin.ModelAdmin):
 
 admin.site.register(Links)
 admin.site.register(Tasks)
+admin.site.register(Withdrawal_Record)
 
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundTransferHistory, FundTransferHistoryAdmin)

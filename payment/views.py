@@ -225,8 +225,8 @@ def withdrawal(request):
                       private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
                     res = api.create_withdrawal(amount=amount,currency="TRX",address=walletAddress)
                     if res['error'] == 'ok':
-                        withdrawal = Withdrawal(user = user,amount=amount,address=walletAddress)
-                        withdrawal.save()
+                        withdrawal = Withdrawal.objects.create(user = user,amount=amount,address=walletAddress)
+    
                         user.refund -= float(amount)
                         user.save()
                         package.is_withdrawal = True

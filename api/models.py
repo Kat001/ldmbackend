@@ -133,13 +133,12 @@ class Tasks(models.Model):
     def __str__(self):
         return package.amount
 
-class Withdrawal(models.Model):
+
+class Withdrawal_Record(models.Model):
     user = models.ForeignKey(Account,on_delete=models.CASCADE)
     address = models.CharField(max_length=200,default="",)
     amount = models.FloatField(default=0)
     date = models.DateField(auto_now_add=True)
     status = models.BooleanField(default=True)
 
-    def __str__(self):
-        return self.user.username
 
