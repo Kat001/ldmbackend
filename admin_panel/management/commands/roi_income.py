@@ -8,17 +8,18 @@ from django.db.models import Max
 class Command(BaseCommand):
     help = 'Displays current time'
 
-    def send_roi_on_roi(r_obj):
-        user = r_obj.sponsor
-        package = PurchasedPackages.objects.filter(user=user).aggregate(Max('amount'))['amount__max']#Current Active Plan of that user
-        try:
-            if package >= r_obj.package_amount:
-                obj = AllRoiOnRoiIncome(user=user,from_user=r_obj.user,income=r_obj.amount)
-                user.refund += r_obj.amount
-                user.save()
-                obj.save()
-        except Exception as e:
-            print("error-->",e)
+    def send_roi_on_roi(self,r_obj):
+        user = r_obj.user.sponsor
+        if user.is_active1:
+            package = PurchasedPackages.objects.filter(user=user).aggregate(Max('amount'))['amount__max']#Current Active Plan of that user
+            try:
+                if package >= r_obj.package_amount:
+                    obj = AllRoiOnRoiIncome(user=user,from_user=r_obj.user,income=r_obj.amount)
+                    user.refund += r_obj.amount
+                    user.save()
+                    obj.save()
+            except Exception as e:
+                print("error-->",e)
 
     def handle(self, *args, **kwargs):
         objs = PurchasedPackages.objects.all()
