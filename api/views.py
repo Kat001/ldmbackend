@@ -101,8 +101,10 @@ class MainPage(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = request.user
-        roi_on_roi = AllRoiOnRoiIncome.objects.filter(user=user).aggregate(Sum('income'))['income_sum']
+        user = Account.objects.get(username="admin")#request.user
+        
+        roi_on_roi = AllRoiOnRoiIncome.objects.filter(user=user).aggregate(Sum('income'))['income__sum']
+        
         return Response({'total_income': round(user.total_level_income+user.total_roi_income+roi_on_roi),
                           'total_Withdrawal':round(user.total_withdrawal,3),
                           'total_profit' : round(user.refund,3),
