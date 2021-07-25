@@ -101,7 +101,7 @@ class MainPage(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        user = Account.objects.get(username="admin")#request.user
+        user = request.user
         
         roi_on_roi = AllRoiOnRoiIncome.objects.filter(user=user).aggregate(Sum('income'))['income__sum']
         
