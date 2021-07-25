@@ -469,18 +469,18 @@ class TaskDetails(APIView):
 
 
 class Withdrawal(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        user = Account.objects.get(username="admin")#request.user
-        amount = 5#int(request.data['amount'])
-        wallet_address = "0x831f070c92302d3ab8dadcd7ba46401b2e791c3d" #request.data['wallet_address']
+        user = request.user
+        amount = int(request.data['amount'])
+        wallet_address = request.data['wallet_address']
         try:
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
                     private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
-                res = api.create_withdrawal(amount=amount,currency="BUSD Token",address=wallet_address,auto_confirm=1)
+                res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address,auto_confirm=1,add_tx_fee=1)
                 print(res)
                 if res['error'] == 'ok':
                     Withdrawal = Withdrawal_Record(user = user,amount=amount,address=wallet_address)
