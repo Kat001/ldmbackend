@@ -16,6 +16,8 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from coinpayments import CoinPaymentsAPI
 from api.models import Withdrawal_Record
+from django.db.models import Sum
+
 
 
 
@@ -100,8 +102,8 @@ class MainPage(APIView):
 
     def get(self, request, format=None):
         user = request.user
-
-        return Response({'total_income': round(user.refund,3),
+        roi_on_roi = AllRoiOnRoiIncome.objects.filter(user=user).aggregate(Sum('income'))['income_sum']
+        return Response({'total_income': round(user.total_level_income+user.total_roi_income+roi_on_roi),
                           'total_Withdrawal':round(user.total_withdrawal,3),
                           'total_profit' : round(user.refund,3),
                           'username' : user.username,
@@ -441,9 +443,10 @@ def Downloadapk(request):
     print("Download apk........")
     file_path = os.path.join(settings.MEDIA_ROOT, 'profile_pics/app-release.apk')
     if os.path.exists(file_path):
-        response = HttpResponse(fh, content_type="application/vnd.android.package-archive") 
-        response["Content-disposition"] = "attachment; filename={}".format(os.path.basename(file_path))
-        return response
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh, content_type="application/vnd.android.package-archive") 
+            response["Content-disposition"] = "attachment; filename={}".format(os.path.basename(file_path))
+            return response
     raise Http404
     return render(request,'download.html')
 
@@ -466,18 +469,18 @@ class TaskDetails(APIView):
 
 
 class Withdrawal(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    # authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        user = request.user
-        amount = int(request.data['amount'])
-        wallet_address = request.data['wallet_address']
+        user = Account.objects.get(username="admin")#request.user
+        amount = 5#int(request.data['amount'])
+        wallet_address = "0x831f070c92302d3ab8dadcd7ba46401b2e791c3d" #request.data['wallet_address']
         try:
             if float(amount)<=user.refund and float(amount)>=5:
                 api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
                     private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
-                res = api.create_withdrawal(amount=amount,currency="BUSD.BEP20",address=wallet_address,auto_confirm=1)
+                res = api.create_withdrawal(amount=amount,currency="BUSD Token",address=wallet_address,auto_confirm=1)
                 print(res)
                 if res['error'] == 'ok':
                     Withdrawal = Withdrawal_Record(user = user,amount=amount,address=wallet_address)
@@ -492,7 +495,7 @@ class Withdrawal(APIView):
                 return Response({"message":"not enough balance!"},status=201)
         except Exception as e:
             print(e)
-            Response({"message":str(e)},status=401)
+            Response({"message":"str(e)"},status=401)
 
         return Response({
             'message' : "failed",
@@ -509,5 +512,16 @@ class WithdrawalHistory(APIView):
 
         return Response({
             'data' : serializer.data,
+            })
+
+class InfoView(APIView):
+
+    def get(self, request, format=None):
+        api = CoinPaymentsAPI(public_key='3d20edfe5530942f36ba73c372df754fbc6256eaffbb0bb638562d4409499e12', 
+            private_key='f36f89cbF1a061203DbA2529853dC413083D657bae53163FaCe8559835F2DD8e')
+        res = api.get_withdrawal_info(id="CWFG5ETWORLR2J69PBBN9EHUTL")
+        print(res)
+        return Response({
+            'data' : "serializer.data",
             })
 
