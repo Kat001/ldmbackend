@@ -106,7 +106,7 @@ class MainPage(APIView):
         roi_on_roi = AllRoiOnRoiIncome.objects.filter(user=user).aggregate(Sum('income'))['income__sum']
         if roi_on_roi is None:
             roi_on_roi = 0
-        return Response({'total_income': round(user.total_level_income+user.total_roi_income+roi_on_roi+0.5),
+        return Response({'total_income': round(user.total_level_income+user.total_roi_income+roi_on_roi+0.5,3),
                           'total_Withdrawal':round(user.total_withdrawal,3),
                           'total_profit' : round(user.refund,3),
                           'username' : user.username,
