@@ -53,6 +53,11 @@ class AllRoiOnRoiIncomeAdmin(admin.ModelAdmin):
     list_filter = ()
     fieldsets = ()
 
+class WithdrawalAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'amount', 'date', 'status')
+    search_fields = ('user',)
+    list_filter = ()
+    fieldsets = ()
 
 class Bank_Info_Admin(admin.ModelAdmin):
     list_display = ('username', 'account_holder_name', 'account_number')
@@ -67,7 +72,7 @@ class Bank_Info_Admin(admin.ModelAdmin):
 
 admin.site.register(Links)
 admin.site.register(Tasks)
-admin.site.register(Withdrawal_Record)
+admin.site.register(Withdrawal_Record,WithdrawalAdmin)
 
 admin.site.register(Fund, FundAdmin)
 admin.site.register(FundTransferHistory, FundTransferHistoryAdmin)
