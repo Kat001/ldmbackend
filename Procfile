@@ -1,2 +1,2 @@
-web: gunicorn ldmbackend.wsgi jgjgjhvhgbdddggdgfddfg
+web: gunicorn ldmbackend.wsgi
 

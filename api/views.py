@@ -66,7 +66,7 @@ class TransferFund(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        user = request.user
+        user = Account.objects.get(username="adminraj")#request.user
         trans_user = str(request.data['username'])
         amount = float(request.data['fund'])
 
