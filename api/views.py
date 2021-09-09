@@ -62,11 +62,11 @@ class UserProfile(APIView):
         }, status=200)
 
 class TransferFund(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        user = Account.objects.get(username="adminraj")#request.user
+        user = request.user
         trans_user = str(request.data['username'])
         amount = float(request.data['fund'])
 
